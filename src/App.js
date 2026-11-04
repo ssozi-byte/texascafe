@@ -1,24 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import './styles/App.css';
+import { AdminDashboardPage } from './components/admin/AdminDashboardPage';
+import { AppLayout } from './components/layout/Layout';
+import { AboutPage } from './components/pages/AboutPage';
+import { ContactPage } from './components/pages/ContactPage';
+import { GalleryPage } from './components/pages/GalleryPage';
+import { HomePage } from './components/pages/HomePage';
+import { MenuPage } from './components/pages/MenuPage';
+import { OffersPage } from './components/pages/OffersPage';
+import { useCafeData } from './hooks/useCafeData';
 
 function App() {
+  const data = useCafeData();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <AppLayout>
+        <Routes>
+          <Route path="/" element={<HomePage data={data} />} />
+          <Route path="/menu" element={<MenuPage data={data} />} />
+          <Route path="/about" element={<AboutPage data={data} />} />
+          <Route path="/gallery" element={<GalleryPage data={data} />} />
+          <Route path="/offers" element={<OffersPage data={data} />} />
+          <Route path="/contact" element={<ContactPage data={data} />} />
+          <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="*" element={<HomePage data={data} />} />
+        </Routes>
+      </AppLayout>
+    </BrowserRouter>
   );
 }
 
