@@ -12,7 +12,7 @@ export function AboutSnippet({ business }) {
       </div>
       <div className="about-image-wrap">
         <img
-          src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=80"
+          src="/images/rice-chicken.jpg"
           alt="The café interior and dining area"
         />
       </div>

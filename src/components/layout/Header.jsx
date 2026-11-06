@@ -2,16 +2,14 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { business, navItems } from '../../data/siteData';
 
-// Shared header for all public pages. It includes brand identity, responsive navigation and the
-// primary order CTA used throughout the storefront.
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="site-header">
       <div className="container nav-wrap">
-        <NavLink to="/" className="brand" aria-label="Kim’s Texas Caffe home">
-          <span className="brand-mark">K</span>
+        <NavLink to="/" className="brand" aria-label="Kim's Texas Caffe home">
+          <img src="/images/texas-logo-round.jpeg" alt="Kim's Texas Caffe logo" className="brand-logo" />
           <span>
             <strong>{business.name}</strong>
             <small>{business.shortName}</small>

@@ -6,7 +6,6 @@ import { AboutPage } from './components/pages/AboutPage';
 import { ContactPage } from './components/pages/ContactPage';
 import { GalleryPage } from './components/pages/GalleryPage';
 import { HomePage } from './components/pages/HomePage';
-import { MenuPage } from './components/pages/MenuPage';
 import { OffersPage } from './components/pages/OffersPage';
 import { useCafeData } from './hooks/useCafeData';
 
@@ -18,7 +17,6 @@ function App() {
       <AppLayout>
         <Routes>
           <Route path="/" element={<HomePage data={data} />} />
-          <Route path="/menu" element={<MenuPage data={data} />} />
           <Route path="/about" element={<AboutPage data={data} />} />
           <Route path="/gallery" element={<GalleryPage data={data} />} />
           <Route path="/offers" element={<OffersPage data={data} />} />
