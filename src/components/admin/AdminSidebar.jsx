@@ -1,11 +1,12 @@
 // Sidebar navigation for the admin workspace. It keeps the screen organised into a small set of
 // sections so the dashboard stays readable even as more controls are added later.
-export function AdminSidebar({ activeTab, onTabChange, summary }) {
+export function AdminSidebar({ activeTab, onTabChange, summary, canManageAccounts }) {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'menu', label: 'Menu Manager' },
     { id: 'offers', label: 'Offers' },
     { id: 'inquiries', label: 'Inquiries' },
+    ...(canManageAccounts ? [{ id: 'accounts', label: 'Admin Accounts' }] : []),
   ];
 
   return (

@@ -35,6 +35,12 @@ const defaultSummary = {
 };
 
 const AUTH_STORAGE_KEY = 'texascafe_admin_token';
+const permissionOptions = ['menu', 'prices', 'images', 'offers', 'accounts'];
+const emptyAccountForm = {
+  username: '',
+  password: '',
+  permissions: ['menu', 'prices', 'images', 'offers'],
+};
 
 export function AdminDashboardPage() {
   const [token, setToken] = useState(() => localStorage.getItem(AUTH_STORAGE_KEY));
@@ -46,23 +52,39 @@ export function AdminDashboardPage() {
   const [inquiries, setInquiries] = useState(fallbackInquiries);
   const [menuForm, setMenuForm] = useState(emptyMenuForm);
   const [offerForm, setOfferForm] = useState(emptyOfferForm);
+  const [adminAccounts, setAdminAccounts] = useState([]);
+  const [accountForm, setAccountForm] = useState(emptyAccountForm);
+  const [userPermissions, setUserPermissions] = useState([]);
   const [notice, setNotice] = useState('');
-  const [loginForm, setLoginForm] = useState({ username: 'admin', password: 'kimtexascafe123' });
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
+
+  const canManageAccounts = userPermissions.includes('accounts');
+  const canManageMenu = userPermissions.some((permission) => ['menu', 'prices', 'images'].includes(permission));
+  const canManageOffers = userPermissions.includes('offers');
 
   const loadDashboardData = useCallback(async () => {
     try {
-      const [summaryData, menuData, offerData, inquiryData] = await Promise.all([
+      const [summaryData, menuData, offerData, inquiryData, meData] = await Promise.all([
         fetchJson('/api/admin/summary', defaultSummary, token),
         fetchJson('/api/admin/menu', fallbackMenuItems, token),
         fetchJson('/api/admin/offers', fallbackOffers, token),
         fetchJson('/api/admin/inquiries', fallbackInquiries, token),
+        fetchJson('/api/admin/me', { username: '', permissions: [] }, token),
       ]);
 
       setSummary(summaryData);
       setMenuItems(menuData || fallbackMenuItems);
       setOffers(offerData || fallbackOffers);
       setInquiries(inquiryData || fallbackInquiries);
+      setUserPermissions(meData?.permissions || []);
+
+      if (meData?.permissions?.includes('accounts')) {
+        const accountData = await fetchJson('/api/admin/accounts', [], token);
+        setAdminAccounts(accountData || []);
+      } else {
+        setAdminAccounts([]);
+      }
     } catch (error) {
       console.warn('Unable to load admin dashboard data.', error);
     }
@@ -87,6 +109,7 @@ export function AdminDashboardPage() {
     localStorage.setItem(AUTH_STORAGE_KEY, newToken);
     setToken(newToken);
     setIsAuthenticated(true);
+    setUserPermissions(response.permissions || []);
     setLoginError('');
     setNotice('Logged in successfully.');
   }
@@ -99,6 +122,8 @@ export function AdminDashboardPage() {
     localStorage.removeItem(AUTH_STORAGE_KEY);
     setToken(null);
     setIsAuthenticated(false);
+    setUserPermissions([]);
+    setAdminAccounts([]);
     setNotice('You have been logged out.');
   }
 
@@ -178,6 +203,73 @@ export function AdminDashboardPage() {
     }
   }
 
+  function toggleAccountPermission(permission) {
+    setAccountForm((current) => {
+      const nextPermissions = new Set(current.permissions);
+      if (nextPermissions.has(permission)) {
+        nextPermissions.delete(permission);
+      } else {
+        nextPermissions.add(permission);
+      }
+
+      return {
+        ...current,
+        permissions: [...nextPermissions],
+      };
+    });
+  }
+
+  async function handleAccountSubmit(event) {
+    event.preventDefault();
+
+    try {
+      const isEditing = Boolean(adminAccounts.some((account) => account.username === accountForm.username));
+      const payload = {
+        username: accountForm.username,
+        permissions: accountForm.permissions,
+        ...(accountForm.password ? { password: accountForm.password } : {}),
+      };
+
+      const response = isEditing
+        ? await putJson(`/api/admin/accounts/${accountForm.username}`, payload, [], token)
+        : await postJson('/api/admin/accounts', payload, [], token);
+
+      const nextAccountList = isEditing
+        ? adminAccounts.map((account) => (account.username === accountForm.username ? response : account))
+        : [response, ...adminAccounts];
+
+      setAdminAccounts(nextAccountList);
+      setAccountForm({ ...emptyAccountForm, permissions: [...emptyAccountForm.permissions] });
+      setNotice(isEditing ? 'Admin account updated successfully.' : 'Admin account created successfully.');
+      setActiveTab('accounts');
+      await loadDashboardData();
+    } catch (error) {
+      setNotice('Unable to update the admin account.');
+      console.error(error);
+    }
+  }
+
+  async function handleDeleteAccount(username) {
+    try {
+      await deleteJson(`/api/admin/accounts/${username}`, { username }, { deleted: username }, token);
+      setAdminAccounts((current) => current.filter((account) => account.username !== username));
+      setNotice('Admin account removed.');
+      await loadDashboardData();
+    } catch (error) {
+      setNotice('Admin account removal failed.');
+      console.error(error);
+    }
+  }
+
+  function startEditingAccount(account) {
+    setAccountForm({
+      username: account.username,
+      password: '',
+      permissions: [...(account.permissions || [])],
+    });
+    setActiveTab('accounts');
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="admin-dashboard-page">
@@ -214,7 +306,7 @@ export function AdminDashboardPage() {
               <button type="submit" className="button button-primary">Log in</button>
             </form>
 
-            <p className="login-hint">Default admin credentials: admin / kimtexascafe123</p>
+            <p className="login-hint">Use the dedicated Texas Caffe admin account issued for the dashboard.</p>
           </div>
         </div>
       </div>
@@ -224,7 +316,7 @@ export function AdminDashboardPage() {
   return (
     <div className="admin-dashboard-page">
       <div className="container admin-layout">
-        <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} summary={summary} />
+        <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} summary={summary} canManageAccounts={canManageAccounts} />
 
         <main className="admin-main">
           <header className="admin-header">
@@ -279,7 +371,7 @@ export function AdminDashboardPage() {
             </section>
           )}
 
-          {activeTab === 'menu' && (
+          {activeTab === 'menu' && canManageMenu && (
             <section className="admin-panel">
               <div className="admin-grid-two align-start">
                 <form className="content-card form-card" onSubmit={handleMenuSubmit}>
@@ -373,7 +465,7 @@ export function AdminDashboardPage() {
             </section>
           )}
 
-          {activeTab === 'offers' && (
+          {activeTab === 'offers' && canManageOffers && (
             <section className="admin-panel">
               <div className="admin-grid-two align-start">
                 <form className="content-card form-card" onSubmit={handleOfferSubmit}>
@@ -423,6 +515,72 @@ export function AdminDashboardPage() {
                         <div className="list-actions">
                           <button type="button" onClick={() => setOfferForm(offer)}>Edit</button>
                           <button type="button" className="destructive" onClick={() => handleDeleteOffer(offer.id || offer.title)}>Delete</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {activeTab === 'accounts' && canManageAccounts && (
+            <section className="admin-panel">
+              <div className="admin-grid-two align-start">
+                <form className="content-card form-card" onSubmit={handleAccountSubmit}>
+                  <h2>{adminAccounts.some((account) => account.username === accountForm.username) ? 'Edit admin account' : 'Create admin account'}</h2>
+
+                  <label>
+                    Username
+                    <input
+                      value={accountForm.username}
+                      onChange={(event) => setAccountForm((current) => ({ ...current, username: event.target.value }))}
+                      placeholder="manager"
+                    />
+                  </label>
+
+                  <label>
+                    Password
+                    <input
+                      type="password"
+                      value={accountForm.password}
+                      onChange={(event) => setAccountForm((current) => ({ ...current, password: event.target.value }))}
+                      placeholder={adminAccounts.some((account) => account.username === accountForm.username) ? 'Leave blank to keep current password' : 'Choose a password'}
+                    />
+                  </label>
+
+                  <div className="permission-list">
+                    {permissionOptions.map((permission) => (
+                      <label key={permission} className="checkbox-row permission-row">
+                        <input
+                          type="checkbox"
+                          checked={accountForm.permissions.includes(permission)}
+                          onChange={() => toggleAccountPermission(permission)}
+                        />
+                        {permission}
+                      </label>
+                    ))}
+                  </div>
+
+                  <button type="submit" className="button button-primary">
+                    {adminAccounts.some((account) => account.username === accountForm.username) ? 'Save changes' : 'Create account'}
+                  </button>
+                </form>
+
+                <div className="content-card list-card">
+                  <h2>Admin accounts</h2>
+                  <div className="mini-list">
+                    {adminAccounts.map((account) => (
+                      <div key={account.username} className="mini-row">
+                        <div>
+                          <strong>{account.username}</strong>
+                          <small>{(account.permissions || []).join(', ') || 'No permissions assigned'}</small>
+                        </div>
+                        <div className="list-actions">
+                          <button type="button" onClick={() => startEditingAccount(account)}>Edit</button>
+                          {account.username !== 'admin' && (
+                            <button type="button" className="destructive" onClick={() => handleDeleteAccount(account.username)}>Delete</button>
+                          )}
                         </div>
                       </div>
                     ))}

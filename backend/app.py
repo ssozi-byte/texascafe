@@ -1,5 +1,6 @@
 # Flask backend for Kim's Texas Caffe.
 # It exposes a small REST API used by the React frontend and the admin dashboard.
+import hashlib
 import os
 import secrets
 import sqlite3
@@ -54,14 +55,14 @@ categories = [
 ]
 
 menu_seed = [
-    {'id': 1, 'name': 'Cappuccino', 'category': 'Coffee & Hot Drinks', 'price': 'KSh 420', 'description': 'A rich espresso-based coffee with velvety foam and a smooth finish.', 'image': 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80', 'featured': 1},
-    {'id': 2, 'name': 'Mango Burst', 'category': 'Fresh Juices & Cold Drinks', 'price': 'KSh 350', 'description': 'Fresh mango juice blended with a citrus twist for a vibrant, refreshing sip.', 'image': 'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=900&q=80', 'featured': 1},
-    {'id': 3, 'name': 'Texas Burger', 'category': 'Burgers & Quick Bites', 'price': 'KSh 680', 'description': 'Juicy beef patty, crisp lettuce, tomato and signature sauce in a toasted bun.', 'image': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80', 'featured': 1},
-    {'id': 4, 'name': 'Chicken Shawarma', 'category': 'Main Meals', 'price': 'KSh 520', 'description': 'Loaded with grilled chicken, fresh veg and a creamy garlic sauce wrapped to perfection.', 'image': 'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=900&q=80', 'featured': 0},
-    {'id': 5, 'name': 'Beef Pizza', 'category': 'Pizza & Grills', 'price': 'KSh 1,250', 'description': 'Stone-baked pizza with mozzarella, beef slices and a rich tomato base.', 'image': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=80', 'featured': 1},
-    {'id': 6, 'name': 'Mixed Grill Platter', 'category': 'Pizza & Grills', 'price': 'KSh 1,700', 'description': 'A hearty platter with grilled chicken, beef, chips and a side of fresh salad.', 'image': 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=900&q=80', 'featured': 0},
-    {'id': 7, 'name': 'Vanilla Cheesecake', 'category': 'Desserts & Treats', 'price': 'KSh 430', 'description': 'Smooth, creamy and indulgent with a wafer crumb base and silky vanilla finish.', 'image': 'https://images.unsplash.com/photo-1533134242443-d6adb086179d?auto=format&fit=crop&w=900&q=80', 'featured': 0},
-    {'id': 8, 'name': 'Lemonade Spritz', 'category': 'Fresh Juices & Cold Drinks', 'price': 'KSh 300', 'description': 'House-made lemonade with a bright citrus kick and a refreshing finish.', 'image': 'https://images.unsplash.com/photo-1622483767028-3f66f2b0c1d4?auto=format&fit=crop&w=900&q=80', 'featured': 0},
+    {'id': 1, 'name': 'Cappuccino', 'category': 'Coffee & Hot Drinks', 'price': 'KSh 420', 'description': 'A rich espresso-based coffee with velvety foam and a smooth finish.', 'image': '/images/drinks-menu.jpeg', 'featured': 1},
+    {'id': 2, 'name': 'Mango Burst', 'category': 'Fresh Juices & Cold Drinks', 'price': 'KSh 350', 'description': 'Fresh mango juice blended with a citrus twist for a vibrant, refreshing sip.', 'image': '/images/beverage-selection.jpeg', 'featured': 1},
+    {'id': 3, 'name': 'Texas Burger', 'category': 'Burgers & Quick Bites', 'price': 'KSh 680', 'description': 'Juicy beef patty, crisp lettuce, tomato and signature sauce in a toasted bun.', 'image': '/images/pizza-burgers-shawarma.jpeg', 'featured': 1},
+    {'id': 4, 'name': 'Chicken Shawarma', 'category': 'Main Meals', 'price': 'KSh 520', 'description': 'Loaded with grilled chicken, fresh veg and a creamy garlic sauce wrapped to perfection.', 'image': '/images/pizza-burgers-shawarma.jpeg', 'featured': 0},
+    {'id': 5, 'name': 'Beef Pizza', 'category': 'Pizza & Grills', 'price': 'KSh 1,250', 'description': 'Stone-baked pizza with mozzarella, beef slices and a rich tomato base.', 'image': '/images/pizza-burgers-shawarma.jpeg', 'featured': 1},
+    {'id': 6, 'name': 'Mixed Grill Platter', 'category': 'Pizza & Grills', 'price': 'KSh 1,700', 'description': 'A hearty platter with grilled chicken, beef, chips and a side of fresh salad.', 'image': '/images/main-dishes.jpeg', 'featured': 0},
+    {'id': 7, 'name': 'Vanilla Cheesecake', 'category': 'Desserts & Treats', 'price': 'KSh 430', 'description': 'Smooth, creamy and indulgent with a wafer crumb base and silky vanilla finish.', 'image': '/images/food-platter.jpeg', 'featured': 0},
+    {'id': 8, 'name': 'Lemonade Spritz', 'category': 'Fresh Juices & Cold Drinks', 'price': 'KSh 300', 'description': 'House-made lemonade with a bright citrus kick and a refreshing finish.', 'image': '/images/beverage-selection.jpeg', 'featured': 0},
 ]
 
 offer_seed = [
@@ -71,12 +72,12 @@ offer_seed = [
 ]
 
 gallery_images = [
-    'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
+    '/images/main-dishes.jpeg',
+    '/images/drinks-menu.jpeg',
+    '/images/pizza-burgers-shawarma.jpeg',
+    '/images/beverage-selection.jpeg',
+    '/images/food-platter.jpeg',
+    '/images/grilled-bites.jpeg',
 ]
 
 
@@ -84,6 +85,53 @@ def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def hash_password(password):
+    return hashlib.sha256(str(password).encode('utf-8')).hexdigest()
+
+
+def normalize_permissions(raw_permissions):
+    if raw_permissions is None:
+        return []
+
+    if isinstance(raw_permissions, str):
+        entries = raw_permissions.split(',')
+    elif isinstance(raw_permissions, (list, tuple, set)):
+        entries = raw_permissions
+    else:
+        entries = [raw_permissions]
+
+    return [str(item).strip() for item in entries if str(item).strip()]
+
+
+def get_admin_permissions(username):
+    conn = get_db()
+    row = conn.execute(
+        'SELECT permissions FROM admins WHERE username = ?',
+        (username,),
+    ).fetchone()
+    conn.close()
+
+    if row is None:
+        return []
+
+    return normalize_permissions(row['permissions'])
+
+
+def ensure_default_admin_account(conn):
+    permission_string = 'menu,prices,images,offers,accounts'
+    row = conn.execute('SELECT username FROM admins WHERE username = ?', (ADMIN_USERNAME,)).fetchone()
+    if row is None:
+        conn.execute(
+            'INSERT INTO admins (username, password_hash, permissions) VALUES (?, ?, ?)',
+            (ADMIN_USERNAME, hash_password(ADMIN_PASSWORD), permission_string),
+        )
+    else:
+        conn.execute(
+            'UPDATE admins SET password_hash = ?, permissions = ? WHERE username = ?',
+            (hash_password(ADMIN_PASSWORD), permission_string, ADMIN_USERNAME),
+        )
 
 
 def init_db():
@@ -117,12 +165,21 @@ def init_db():
         )
     ''')
     conn.execute('''
+        CREATE TABLE IF NOT EXISTS admins (
+            username TEXT PRIMARY KEY,
+            password_hash TEXT NOT NULL,
+            permissions TEXT DEFAULT 'menu,prices,images,offers'
+        )
+    ''')
+    conn.execute('''
         CREATE TABLE IF NOT EXISTS admin_sessions (
             token TEXT PRIMARY KEY,
             username TEXT NOT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
+    ensure_default_admin_account(conn)
 
     menu_count = conn.execute('SELECT COUNT(*) AS total FROM menu').fetchone()['total']
     if menu_count == 0:
@@ -180,6 +237,20 @@ def fetch_all_inquiries():
     return [dict(row) for row in rows]
 
 
+def fetch_all_admins():
+    conn = get_db()
+    rows = conn.execute('SELECT username, permissions FROM admins ORDER BY username ASC').fetchall()
+    conn.close()
+
+    admins = []
+    for row in rows:
+        admins.append({
+            'username': row['username'],
+            'permissions': normalize_permissions(row['permissions']),
+        })
+    return admins
+
+
 def get_authenticated_user():
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('Bearer '):
@@ -201,6 +272,27 @@ def require_admin_auth(func):
         return func(*args, **kwargs)
 
     return wrapper
+
+
+def require_admin_permission(*permissions):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            user = get_authenticated_user()
+            if user is None:
+                return jsonify({'error': 'Authentication required'}), 401
+
+            user_permissions = set(get_admin_permissions(user))
+            allowed = set(permissions)
+            if not user_permissions.intersection(allowed):
+                joined = ', '.join(permissions) if permissions else 'admin access'
+                return jsonify({'error': f'Permission required: {joined}'}), 403
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 init_db()
@@ -247,16 +339,31 @@ def admin_login():
     username = payload.get('username', '')
     password = payload.get('password', '')
 
-    if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
+    conn = get_db()
+    row = conn.execute(
+        'SELECT username, password_hash, permissions FROM admins WHERE username = ?',
+        (username,),
+    ).fetchone()
+    is_valid = bool(row) and row['password_hash'] == hash_password(password)
+    conn.close()
+
+    if not is_valid:
         return jsonify({'error': 'Invalid credentials'}), 401
 
     token = secrets.token_urlsafe(32)
     conn = get_db()
-    conn.execute('INSERT INTO admin_sessions (token, username) VALUES (?, ?)', (token, username))
+    conn.execute(
+        'INSERT OR REPLACE INTO admin_sessions (token, username) VALUES (?, ?)',
+        (token, username),
+    )
     conn.commit()
     conn.close()
 
-    return jsonify({'token': token, 'username': username})
+    return jsonify({
+        'token': token,
+        'username': username,
+        'permissions': get_admin_permissions(username),
+    })
 
 
 @app.post('/api/admin/logout')
@@ -273,7 +380,93 @@ def admin_logout():
 @app.get('/api/admin/me')
 @require_admin_auth
 def admin_me():
-    return jsonify({'username': get_authenticated_user()})
+    username = get_authenticated_user()
+    return jsonify({'username': username, 'permissions': get_admin_permissions(username)})
+
+
+@app.get('/api/admin/accounts')
+@require_admin_permission('accounts')
+def get_admin_accounts():
+    return jsonify(fetch_all_admins())
+
+
+@app.post('/api/admin/accounts')
+@require_admin_permission('accounts')
+def create_admin_account():
+    payload = request.get_json(silent=True) or {}
+    username = str(payload.get('username', '')).strip()
+    password = str(payload.get('password', '')).strip()
+    permissions = normalize_permissions(payload.get('permissions', ['menu', 'prices', 'images', 'offers']))
+
+    if not username or not password:
+        return jsonify({'error': 'Username and password are required'}), 400
+
+    conn = get_db()
+    existing = conn.execute('SELECT username FROM admins WHERE username = ?', (username,)).fetchone()
+    if existing is not None:
+        conn.close()
+        return jsonify({'error': 'Admin account already exists'}), 409
+
+    conn.execute(
+        'INSERT INTO admins (username, password_hash, permissions) VALUES (?, ?, ?)',
+        (username, hash_password(password), ','.join(permissions)),
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify({'username': username, 'permissions': permissions})
+
+
+@app.put('/api/admin/accounts/<username>')
+@require_admin_permission('accounts')
+def update_admin_account(username):
+    payload = request.get_json(silent=True) or {}
+    permissions = normalize_permissions(payload.get('permissions', []))
+    password = str(payload.get('password', '')).strip()
+
+    if not permissions:
+        return jsonify({'error': 'At least one permission is required'}), 400
+
+    conn = get_db()
+    if username == ADMIN_USERNAME:
+        if password:
+            conn.execute(
+                'UPDATE admins SET password_hash = ?, permissions = ? WHERE username = ?',
+                (hash_password(password), ','.join(permissions), username),
+            )
+        else:
+            conn.execute(
+                'UPDATE admins SET permissions = ? WHERE username = ?',
+                (','.join(permissions), username),
+            )
+    else:
+        if password:
+            conn.execute(
+                'UPDATE admins SET password_hash = ?, permissions = ? WHERE username = ?',
+                (hash_password(password), ','.join(permissions), username),
+            )
+        else:
+            conn.execute(
+                'UPDATE admins SET permissions = ? WHERE username = ?',
+                (','.join(permissions), username),
+            )
+    conn.commit()
+    conn.close()
+    return jsonify({'username': username, 'permissions': permissions})
+
+
+@app.delete('/api/admin/accounts/<username>')
+@require_admin_permission('accounts')
+def delete_admin_account(username):
+    if username == ADMIN_USERNAME:
+        return jsonify({'error': 'The default admin account cannot be deleted'}), 400
+
+    conn = get_db()
+    conn.execute('DELETE FROM admin_sessions WHERE username = ?', (username,))
+    conn.execute('DELETE FROM admins WHERE username = ?', (username,))
+    conn.commit()
+    conn.close()
+    return jsonify({'deleted': username})
 
 
 @app.get('/api/admin/summary')
@@ -288,13 +481,13 @@ def get_admin_summary():
 
 
 @app.get('/api/admin/menu')
-@require_admin_auth
+@require_admin_permission('menu', 'prices', 'images')
 def get_admin_menu():
     return jsonify(fetch_all_menu())
 
 
 @app.get('/api/admin/offers')
-@require_admin_auth
+@require_admin_permission('offers')
 def get_admin_offers():
     return jsonify(fetch_all_offers())
 
@@ -306,7 +499,7 @@ def get_admin_inquiries():
 
 
 @app.post('/api/admin/menu')
-@require_admin_auth
+@require_admin_permission('menu', 'prices', 'images')
 def add_admin_menu_item():
     payload = request.get_json(silent=True) or {}
     conn = get_db()
@@ -329,7 +522,7 @@ def add_admin_menu_item():
 
 
 @app.put('/api/admin/menu/<int:item_id>')
-@require_admin_auth
+@require_admin_permission('menu', 'prices', 'images')
 def update_admin_menu_item(item_id):
     payload = request.get_json(silent=True) or {}
     conn = get_db()
@@ -355,7 +548,7 @@ def update_admin_menu_item(item_id):
 
 
 @app.delete('/api/admin/menu/<int:item_id>')
-@require_admin_auth
+@require_admin_permission('menu', 'prices', 'images')
 def delete_admin_menu_item(item_id):
     conn = get_db()
     conn.execute('DELETE FROM menu WHERE id = ?', (item_id,))
@@ -365,7 +558,7 @@ def delete_admin_menu_item(item_id):
 
 
 @app.post('/api/admin/offers')
-@require_admin_auth
+@require_admin_permission('offers')
 def add_admin_offer():
     payload = request.get_json(silent=True) or {}
     conn = get_db()
@@ -384,7 +577,7 @@ def add_admin_offer():
 
 
 @app.put('/api/admin/offers/<int:offer_id>')
-@require_admin_auth
+@require_admin_permission('offers')
 def update_admin_offer(offer_id):
     payload = request.get_json(silent=True) or {}
     conn = get_db()
@@ -407,7 +600,7 @@ def update_admin_offer(offer_id):
 
 
 @app.delete('/api/admin/offers/<int:offer_id>')
-@require_admin_auth
+@require_admin_permission('offers')
 def delete_admin_offer(offer_id):
     conn = get_db()
     conn.execute('DELETE FROM offers WHERE id = ?', (offer_id,))
