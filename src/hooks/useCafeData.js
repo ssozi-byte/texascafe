@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import {
   business as fallbackBusiness,
   categories as fallbackCategories,
+  experiencePillars as fallbackExperiencePillars,
   galleryImages as fallbackGallery,
   heroSlides as fallbackHeroSlides,
+  homeStats as fallbackHomeStats,
   menuItems as fallbackMenuItems,
   offers as fallbackOffers,
 } from '../data/siteData';
@@ -17,6 +19,8 @@ export function useCafeData() {
     menuItems: fallbackMenuItems,
     offers: fallbackOffers,
     galleryImages: fallbackGallery,
+    experiencePillars: fallbackExperiencePillars,
+    homeStats: fallbackHomeStats,
   });
 
   useEffect(() => {
@@ -29,10 +33,12 @@ export function useCafeData() {
       fetchJson('/api/menu', fallbackMenuItems),
       fetchJson('/api/offers', fallbackOffers),
       fetchJson('/api/gallery', fallbackGallery),
+      fetchJson('/api/experience', fallbackExperiencePillars),
+      fetchJson('/api/stats', fallbackHomeStats),
     ])
-      .then(([business, heroSlides, categories, menuItems, offers, galleryImages]) => {
+      .then(([business, heroSlides, categories, menuItems, offers, galleryImages, experiencePillars, homeStats]) => {
         if (!active) return;
-        setSiteData({ business, heroSlides, categories, menuItems, offers, galleryImages });
+        setSiteData({ business, heroSlides, categories, menuItems, offers, galleryImages, experiencePillars, homeStats });
       })
       .catch((error) => {
         console.warn('Unable to hydrate cafe data from API, keeping fallback content.', error);

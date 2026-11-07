@@ -8,8 +8,8 @@ export function Header() {
   return (
     <header className="site-header">
       <div className="container nav-wrap">
-        <NavLink to="/" className="brand" aria-label="Kim's Texas Caffe home">
-          <img src="/images/texas-logo-round.jpeg" alt="Kim's Texas Caffe logo" className="brand-logo" />
+        <NavLink to="/" className="brand" aria-label={`${business.name} home`}>
+          <img src="/images/logo.jpeg" alt={`${business.name} logo`} className="brand-logo" />
           <span>
             <strong>{business.name}</strong>
             <small>{business.shortName}</small>

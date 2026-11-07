@@ -8,9 +8,40 @@ export const business = {
   whatsappHref: 'https://wa.me/254796999547',
   address: 'Next to Magunas, Ndenderu, Kiambu County, Kenya',
   description:
-    'A casual neighbourhood café serving fresh coffee, iconic comfort meals and easy family-friendly dining in Ndenderu.',
+    'A warm neighbourhood café serving signature coffees, hearty comfort meals and easy family dining in the heart of Ndenderu.',
   hours: 'Mon - Sun • 8:00 AM - 11:00 PM',
+  tagline: 'Fresh food, crafted coffee, and good company.',
 };
+
+export const experiencePillars = [
+  {
+    icon: '☕',
+    title: 'Handcrafted coffee',
+    text: 'Espresso, cappuccino, chai and iced coffee made fresh to order every day.',
+  },
+  {
+    icon: '🍔',
+    title: 'Comfort meals',
+    text: 'Crispy burgers, shawarma, pizza and grilled favourites for every craving.',
+  },
+  {
+    icon: '🥤',
+    title: 'Fresh blends',
+    text: 'Juice bar classics with mango, passion fruit, lemonade and tropical fruit hits.',
+  },
+  {
+    icon: '👨‍👩‍👧‍👦',
+    title: 'Family friendly',
+    text: 'A welcoming local spot for quick lunches, after-school treats and evening catch-ups.',
+  },
+];
+
+export const homeStats = [
+  { value: '8 AM', label: 'Open daily' },
+  { value: '11 PM', label: 'Late-night service' },
+  { value: '18+', label: 'Signature dishes' },
+  { value: '6', label: 'Food categories' },
+];
 
 export const navItems = [
   { label: 'Home', to: '/' },
@@ -24,7 +55,7 @@ export const heroSlides = [
   {
     title: 'Good Food. Great Moments.',
     subtitle: 'Fresh coffee, hearty meals and laid-back vibes in the heart of Ndenderu.',
-    image: '/images/mixed-grill.jpg',
+    image: '/images/cafe-food-spread.jpg',
   },
   {
     title: 'Brewed for busy mornings.',
@@ -34,7 +65,7 @@ export const heroSlides = [
   {
     title: 'Comfort food that feels like home.',
     subtitle: 'From juicy burgers to loaded shawarma, every plate is crafted to satisfy cravings and spark conversations.',
-    image: '/images/texas-burger.jpg',
+    image: '/images/pizza-burgers-shawarma.jpeg',
   },
 ];
 
@@ -108,7 +139,7 @@ export const menuItems = [
     category: 'Burgers & Quick Bites',
     price: 'KSh 680',
     description: 'Juicy beef patty, crisp lettuce, tomato and signature sauce in a toasted bun.',
-    image: '/images/texas-burger.jpg',
+    image: '/images/cafe-dish-01.jpg',
     featured: true,
   },
   {
@@ -117,7 +148,7 @@ export const menuItems = [
     category: 'Burgers & Quick Bites',
     price: 'KSh 620',
     description: 'Crispy fried chicken fillet with coleslaw and garlic mayo in a soft bun.',
-    image: '/images/chicken-burger.jpg',
+    image: '/images/cafe-dish-03.jpg',
     featured: false,
   },
   {
@@ -144,7 +175,7 @@ export const menuItems = [
     category: 'Main Meals',
     price: 'KSh 480',
     description: 'Tender grilled chicken served over steamed rice with a side of kachumbari.',
-    image: '/images/rice-chicken.jpg',
+    image: '/images/cafe-dish-05.jpg',
     featured: false,
   },
   {
@@ -153,7 +184,7 @@ export const menuItems = [
     category: 'Main Meals',
     price: 'KSh 650',
     description: 'Classic Kenyan comfort — smoky roasted meat served with ugali and sukuma wiki.',
-    image: '/images/ugali-nyama.jpg',
+    image: '/images/cafe-dish-06.jpg',
     featured: false,
   },
   {
@@ -219,6 +250,14 @@ export const offers = [
 ];
 
 export const galleryImages = [
+  '/images/cafe-dish-01.jpg',
+  '/images/cafe-dish-02.jpg',
+  '/images/cafe-dish-03.jpg',
+  '/images/cafe-dish-04.jpg',
+  '/images/cafe-dish-05.jpg',
+  '/images/cafe-dish-06.jpg',
+  '/images/cafe-dish-07.jpg',
+  '/images/cafe-dish-08.jpg',
   '/images/mixed-grill.jpg',
   '/images/cappuccino.jpg',
   '/images/texas-burger.jpg',
@@ -228,4 +267,5 @@ export const galleryImages = [
   '/images/mango-juice.jpg',
   '/images/grilled-chicken.jpg',
   '/images/waffles.jpg',
+  '/images/latte.jpg',
 ];

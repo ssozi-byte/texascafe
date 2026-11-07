@@ -9,7 +9,7 @@ export function Footer() {
       <div className="container footer-grid">
         <div>
           <NavLink to="/" className="brand footer-brand">
-            <img src="/images/texas-logo-round.jpeg" alt="Kim's Texas Caffe logo" className="brand-logo" />
+            <img src="/images/logo.jpeg" alt="Kim's Texas Caffe logo" className="brand-logo" />
             <span>
               <strong>{business.name}</strong>
               <small>{business.shortName}</small>
